@@ -89,12 +89,14 @@ def PST(I,LPF,Phase_strength,Warp_strength, Threshold_min, Threshold_max, Morph_
          features[PHI_features> Threshold_max] = 1 # Bi-threshold decision
          features[PHI_features< Threshold_min] = 1 # as the output phase has both positive and negative values
          features[I<(np.amax(I)/20)]=0 # Removing edges in the very dark areas of the image (noise)
-   
-         # apply binary morphological operations to clean the transformed image 
+
          out = features
+         """ 下面的操作，C++中不容易实现，为了对保持一致，故将其屏蔽
+         # apply binary morphological operations to clean the transformed image
          out = mh.thin(out, 1)
-         out = mh.bwperim(out, 4)
+         out = mh.bwperim(out, 4) #求4邻域连通的边界像素。返回一个二值图像，该图像仅包含输入图像中对象的边界像素。如果某像素非零并且与至少一个零值像素连通，则该像素是边界的一部分。
          out = mh.thin(out, 1)
-         out = mh.erode(out, np.ones((1, 1))); 
+         out = mh.erode(out, np.ones((1, 1)))
+         """
    
      return (out, PST_Kernel)
