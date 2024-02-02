@@ -51,33 +51,47 @@ Citations
 # [] Need to install mahotas library for morphological operations
 import os 
 import numpy as np
+#pip install mahotas
 import mahotas as mh
 import matplotlib.pylab as plt
 from itertools import zip_longest
 from PST_function import PST
 
 # [] To process high resolution images set 
-# from PIL import Image
-# Image.MAX_IMAGE_PIXELS = 1000000000
+from PIL import Image
+Image.MAX_IMAGE_PIXELS = 1000000000
 # Replace mh.imread by Image.open
-
+#是否支持高分辨率图片
+bUse_high_resolution = False
 # import sys
 # [] To input filename using command line argument uncomment ^^^
 
-
 # Import the original image
 input_path = os.getcwd() # This is where the code is running. 
-filepath = os.path.join(input_path,'../Test_Images/cameraman.tif')  # The images are located in a folder called 'Test_Images' within the root directory from where the code runs.
+filepath = os.path.join(input_path,'../Test_Images/defect.bmp')  # The images are located in a folder called 'Test_Images' within the root directory from where the code runs.
 
 #filepath = os.path.join(input_path,'../Test_Images/',sys.argv[1])
 # [] To input filename using command line argument uncomment ^^^
 
-Image_orig = mh.imread(filepath) # Read the image.
+# Read the original image.
+if bUse_high_resolution:
+    Image_orig = Image.open(filepath)
+    
+else:
+    Image_orig = mh.imread(filepath)
+
 # To convert the color image to grayscale
-if Image_orig.ndim ==3:
-    Image_orig_grey = mh.colors.rgb2grey(Image_orig)  # Image_orig is color image.
-else: 
-    Image_orig_grey = Image_orig
+if bUse_high_resolution:
+    if Image_orig.mode == "RGB":
+        Image_orig_grey = Image_orig.convert("L")
+    else:
+        Image_orig_grey = np.array(Image_orig)
+else:
+    if Image_orig.ndim ==3:
+        Image_orig_grey = mh.colors.rgb2grey(Image_orig)  # Image_orig is color image.
+    else: 
+        Image_orig_grey = Image_orig
+
     
 # Define various 
 # low-pass filtering (also called localization kernel) parameter
@@ -87,7 +101,7 @@ Phase_strength = 0.48
 Warp_strength= 12.14
 # Thresholding parameters (for post processing after the edge is computed)
 Threshold_min = -1
-Threshold_max = 0.0019
+Threshold_max = 0.0019 #0.0005, 0.0019
 # [] Choose to compute the analog or digital edge,
 Morph_flag =1 # [] To compute analog edge, set Morph_flag=0 and to compute digital edge, set Morph_flag=1
 
