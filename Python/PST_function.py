@@ -72,7 +72,9 @@ def PST(I,LPF,Phase_strength,Warp_strength, Threshold_min, Threshold_max, Morph_
      expo = np.fft.fftshift(np.exp(-np.power((np.divide(RHO, math.sqrt((LPF**2)/np.log(2)))),2)))
      Image_orig_filtered=np.real(np.fft.ifft2((np.multiply(Image_orig_f,expo))))
      # Constructing the PST Kernel
+     #PST_Kernel_1 = 𝑊⋅𝑟⋅ tan−1 (𝑊⋅𝑟) − (1/2) ⋅ ln (1 + (𝑊⋅𝑟)2)
      PST_Kernel_1=np.multiply(np.dot(RHO,Warp_strength), np.arctan(np.dot(RHO,Warp_strength)))-0.5*np.log(1+np.power(np.dot(RHO,Warp_strength),2))
+     # PST_Kernel = Phase_strength * PST_Kernel_1/(𝑊⋅𝑟max ⋅ tan−1 (𝑊⋅ 𝑟max) − (1/2) ⋅ ln (1 + (𝑊⋅ 𝑟max)2))
      PST_Kernel=PST_Kernel_1/np.max(PST_Kernel_1)*Phase_strength
      # Apply the PST Kernel
      temp=np.multiply(np.fft.fftshift(np.exp(-1j*PST_Kernel)),np.fft.fft2(Image_orig_filtered))
